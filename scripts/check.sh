@@ -4,8 +4,9 @@
 # app makes macOS revoke its Accessibility permission.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CACHE="${TMPDIR:-/tmp}/qingfenping-swift-cache-$(id -u)"
-mkdir -p "$CACHE"
+# A shared predictable path allows other local users to seed compiler modules.
+CACHE="$(mktemp -d "${TMPDIR:-/tmp}/qingfenping-swift-cache.XXXXXX")"
+trap 'rm -rf "$CACHE"' EXIT
 xcrun swiftc -swift-version 5 -typecheck -target arm64-apple-macosx13.0 -module-cache-path "$CACHE" "$ROOT"/Sources/*.swift
 echo "PASS typecheck: $(ls "$ROOT"/Sources/*.swift | wc -l | tr -d ' ') Sources/*.swift files, no output files"
 "$ROOT/scripts/test.sh"

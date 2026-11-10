@@ -2,11 +2,13 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TEMP="$(mktemp -d "${TMPDIR:-/tmp}/qingfenping-auto.XXXXXX")"
-CACHE="${TMPDIR:-/tmp}/qingfenping-swift-cache-$(id -u)"
-mkdir -p "$TEMP/Fixture.app/Contents/MacOS" "$CACHE"
+CACHE="$TEMP/swift-cache"
+mkdir -p "$TEMP/Fixture.app/Contents/MacOS"
+mkdir -m 700 "$CACHE"
 FIXTURE_PID=""
 cleanup() {
   if [[ -n "$FIXTURE_PID" ]]; then kill -TERM "$FIXTURE_PID" 2>/dev/null || true; fi
+  rm -rf "$CACHE"
   rm -f "$TEMP/auto-tests" "$TEMP/Fixture.app/Contents/MacOS/Fixture" "$TEMP/Fixture.app/Contents/Info.plist" "$TEMP/Fixture.app/Contents/_CodeSignature/CodeResources"
   rmdir "$TEMP/Fixture.app/Contents/_CodeSignature" "$TEMP/Fixture.app/Contents/MacOS" "$TEMP/Fixture.app/Contents" "$TEMP/Fixture.app" "$TEMP" 2>/dev/null || true
 }

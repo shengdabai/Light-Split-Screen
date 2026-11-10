@@ -4,8 +4,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="${1:?Pass a new absolute test work directory}"
 [[ "$WORK" = /* && ! -e "$WORK" ]] || { echo 'Use a new absolute directory' >&2; exit 2; }
 mkdir -p "$WORK/Fixture.app/Contents/MacOS"
-CACHE="${TMPDIR:-/tmp}/qingfenping-swift-cache-$(id -u)"
-mkdir -p "$CACHE"
+CACHE="$(mktemp -d "${TMPDIR:-/tmp}/qingfenping-swift-cache.XXXXXX")"
+trap 'rm -rf "$CACHE"' EXIT
 python3 - "$ROOT" "$WORK" <<'PY2'
 from pathlib import Path
 import sys,plistlib

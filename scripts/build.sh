@@ -2,7 +2,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${1:-$ROOT/dist/轻分屏.app}"
-CACHE="${TMPDIR:-/tmp}/qingfenping-swift-cache-$(id -u)"
+CACHE="$(mktemp -d "${TMPDIR:-/tmp}/qingfenping-swift-cache.XXXXXX")"
+trap 'rm -rf "$CACHE"' EXIT
 mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources" "$CACHE"
 xcrun swiftc -swift-version 5 -Osize -whole-module-optimization -module-name QingFenPing \
   -target arm64-apple-macosx13.0 -module-cache-path "$CACHE" \
